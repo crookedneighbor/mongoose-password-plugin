@@ -25,7 +25,8 @@
   },
   "homepage": "https://github.com/crookedneighbor/mongoose-password-plugin#readme",
   "dependencies": {
-    "bcrypt": "^0.8.5"
+    "bcrypt": "^0.8.5",
+    "lodash": "^4.5.0"
   },
   "devDependencies": {
     "babel-cli": "^6.5.1",
@@ -39,8 +40,10 @@
     "mocha": "^2.4.5",
     "mongoose": "^4.4.4",
     "sinon": "^1.17.3",
+    "sinon-chai": "^2.8.0",
     "snazzy": "^3.0.0",
-    "standard": "^5.4.1"
+    "standard": "^5.4.1",
+    "uuid": "^2.0.1"
   },
   "standard": {
     "globals": [
