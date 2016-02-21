@@ -1,6 +1,6 @@
 {
   "name": "mongoose-password-plugin",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Mongoose plugin that attaches a salted password to a model.",
   "main": "lib/index.js",
   "scripts": {
