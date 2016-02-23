@@ -69,4 +69,4 @@ function passwordPlugin (schema, options = {}) {
   }
 }
 
-export default passwordPlugin
+module.exports = passwordPlugin

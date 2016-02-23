@@ -19,6 +19,10 @@
     "plugin"
   ],
   "author": "Blade Barringer <blade@crookedneighbor.com>",
+  "contributors": [{
+      "name": "Sean Zellmer",
+      "email": "sean@lejeunerenard.com"
+  }],
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/crookedneighbor/mongoose-password-plugin/issues"
