@@ -1,5 +1,16 @@
 import bcrypt from 'bcrypt'
 import { get, set } from 'lodash'
+import {
+  comparePasswordCallback,
+  comparePasswordPromise,
+  comparePasswordSync
+} from './compare-password'
+
+const comparePasswordMethods = {
+  callback: comparePasswordCallback,
+  promise: comparePasswordPromise,
+  sync: comparePasswordSync
+}
 
 function passwordPlugin (schema, options = {}) {
   let {
@@ -7,6 +18,14 @@ function passwordPlugin (schema, options = {}) {
     comparePasswordType = 'callback',
     passwordField = 'password'
   } = options
+
+  let comparePasswordMethod = comparePasswordMethods[comparePasswordType]
+
+  if (!comparePasswordMethod) {
+    throw new Error(`${comparePasswordType} is not a supported type for 'comparePasswordType'`)
+  }
+
+  comparePasswordMethod = comparePasswordMethod({ passwordField }).bind(this)
 
   schema.add({
     [`${passwordField}`]: {
@@ -35,38 +54,7 @@ function passwordPlugin (schema, options = {}) {
     })
   })
 
-  if (comparePasswordType === 'callback') {
-    schema.methods.comparePassword = function (passwordToCheck, cb) {
-      let password = get(this, passwordField)
-
-      bcrypt.compare(passwordToCheck, password, (err, isMatch) => {
-        if (err) return cb(err)
-
-        cb(null, isMatch)
-      })
-    }
-  } else if (comparePasswordType === 'promise') {
-    schema.methods.comparePassword = async function (passwordToCheck) {
-      return new Promise((resolve, reject) => {
-        let password = get(this, passwordField)
-
-        bcrypt.compare(passwordToCheck, password, (err, isMatch) => {
-          if (err) return reject(err)
-
-          resolve(isMatch)
-        })
-      })
-    }
-  } else if (comparePasswordType === 'sync') {
-    schema.methods.comparePassword = function (passwordToCheck) {
-      let password = get(this, passwordField)
-      let match = bcrypt.compareSync(passwordToCheck, password)
-
-      return match
-    }
-  } else {
-    throw new Error(`${comparePasswordType} is not a supported type for 'comparePasswordType'`)
-  }
+  schema.methods.comparePassword = comparePasswordMethod
 }
 
 module.exports = passwordPlugin
