@@ -1,6 +1,6 @@
 {
   "name": "mongoose-password-plugin",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Mongoose plugin that attaches a salted password to a model.",
   "main": "lib/index.js",
   "scripts": {
@@ -19,10 +19,12 @@
     "plugin"
   ],
   "author": "Blade Barringer <blade@crookedneighbor.com>",
-  "contributors": [{
+  "contributors": [
+    {
       "name": "Sean Zellmer",
       "email": "sean@lejeunerenard.com"
-  }],
+    }
+  ],
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/crookedneighbor/mongoose-password-plugin/issues"
