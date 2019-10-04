@@ -33,7 +33,7 @@ let user = new User({
   password: 'asdf'
 })
 
-user.save((err, savedUser) => {
+user.save().then(savedUser => {
   savedUser.password // hashed version of the password
 })
 ```
@@ -43,11 +43,11 @@ user.save((err, savedUser) => {
 let correctPassword = 'asdf'
 let incorrectPassword = 'not asdf'
 
-user.comparePassword(correctPassword, (err, match) => {
+user.comparePassword(correctPassword).then(match => {
   match // true
 })
 
-user.comparePassword(incorrectPassword, (err, match) => {
+user.comparePassword(incorrectPassword).then(match => {
   match // false
 })
 ```
@@ -56,7 +56,7 @@ user.comparePassword(incorrectPassword, (err, match) => {
 // changing the user's password
 user.password = 'a new password'
 
-user.save((err, savedUser) => {
+user.save().then(savedUser => {
   savedUser.password // the hashed version of the new password
 })
 ```
@@ -68,7 +68,6 @@ You can pass in an optional configuration object as a second argument. Below are
 ```js
 userSchema.plugin(passwordPlugin, {
   passwordField: 'password',
-  comparePasswordType: 'callback',
   bcryptRounds: 10
 })
 ```
@@ -93,55 +92,6 @@ userSchema.plugin(passwordPlugin, {
 
 ---
 
-### comparePasswordType
-
-This determines what type of function `comparePassword` will be. The options are: `'callback'`, `'promise'` and `'sync'`
-
-#### callback
-
-`'callback'` is the default option
-
-```js
-// model setup
-userSchema.plugin(passwordPlugin, {
-  comparePasswordType: 'callback',
-})
-
-// check password
-user.comparePassword(passwordFromLoginForm, (err, match) => {
-  match // either true or false
-})
-```
-
-#### promise
-
-```js
-// model setup
-userSchema.plugin(passwordPlugin, {
-  comparePasswordType: 'promise',
-})
-
-// check password
-user.comparePassword(passwordFromLoginForm).then((match) => {
-  match // either true or false
-})
-```
-
-#### sync
-
-```js
-// model setup
-userSchema.plugin(passwordPlugin, {
-  comparePasswordType: 'sync',
-})
-
-// check password
-let match = user.comparePassword(passwordFromLoginForm)
-match // either true or false
-```
-
----
-
 ### bcryptRounds
 
 This determines how many rounds of hasing bcrypt does to generate the password salt. Default value is 10.
@@ -153,6 +103,8 @@ userSchema.plugin(passwordPlugin, {
 ```
 
 ## Tests
+
+A mongo instance must be running on port 27017 for the tests to run.
 
 ```bash
 npm t

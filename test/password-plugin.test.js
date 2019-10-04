@@ -169,7 +169,9 @@ describe('passwordPlugin', () => {
     expect(bcrypt.genSalt).to.be.calledWith(13)
   })
 
-  it('adds a comparePassword method', () => {
+  it('adds a comparePassword method', async function () {
+    this.timeout(4000)
+
     const testSchema = new mongoose.Schema({
       foo: String
     })
@@ -180,74 +182,18 @@ describe('passwordPlugin', () => {
 
     const testDoc = new TestModel({
       foo: 'bar',
-      password: 'asdf'
+      password: 'password'
     })
 
-    expect(testDoc).to.respondTo('comparePassword')
-  })
-
-  it('can configure comparePassword to use callback version', async () => {
-    const testSchema = new mongoose.Schema({
-      foo: String
-    })
-    testSchema.plugin(passwordPlugin, {
-      comparePasswordType: 'callback'
-    })
-    const TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
-
-    const testDoc = new TestModel({
-      foo: 'bar',
-      password: 'asdf'
-    })
     await testDoc.save()
 
-    expect(testDoc.comparePassword).to.be.a('function')
-  })
+    await expect(testDoc.comparePassword('foo')).to.eventually.equal(false)
+    await expect(testDoc.comparePassword('password')).to.eventually.equal(true)
 
-  it('can configure comparePassword to use sync version', async () => {
-    const testSchema = new mongoose.Schema({
-      foo: String
-    })
-    testSchema.plugin(passwordPlugin, {
-      comparePasswordType: 'sync'
-    })
-    const TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
-
-    const testDoc = new TestModel({
-      foo: 'bar',
-      password: 'asdf'
-    })
+    testDoc.password = 'new password'
     await testDoc.save()
 
-    expect(testDoc.comparePassword).to.be.a('function')
-  })
-
-  it('can configure comparePassword to use promise version', async () => {
-    const testSchema = new mongoose.Schema({
-      foo: String
-    })
-    testSchema.plugin(passwordPlugin, {
-      comparePasswordType: 'promise'
-    })
-    const TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
-
-    const testDoc = new TestModel({
-      foo: 'bar',
-      password: 'asdf'
-    })
-    await testDoc.save()
-
-    expect(testDoc.comparePassword).to.be.a('function')
-  })
-
-  it('throws an error if comparePasswordType is set to unsupported type', async () => {
-    const testSchema = new mongoose.Schema({
-      foo: String
-    })
-    expect(() => {
-      testSchema.plugin(passwordPlugin, {
-        comparePasswordType: 'anything else'
-      })
-    }).to.throw('anything else is not a supported type for \'comparePasswordType\'')
+    await expect(testDoc.comparePassword('password')).to.eventually.equal(false)
+    await expect(testDoc.comparePassword('new password')).to.eventually.equal(true)
   })
 })
