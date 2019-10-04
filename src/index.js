@@ -1,10 +1,10 @@
-import bcrypt from 'bcrypt'
-import { get, set } from 'lodash'
-import {
+const bcrypt = require('bcrypt')
+const { get, set } = require('lodash')
+const {
   comparePasswordCallback,
   comparePasswordPromise,
   comparePasswordSync
-} from './compare-password'
+} = require('./compare-password')
 
 const comparePasswordMethods = {
   callback: comparePasswordCallback,
@@ -13,7 +13,7 @@ const comparePasswordMethods = {
 }
 
 function passwordPlugin (schema, options = {}) {
-  let {
+  const {
     bcryptRounds = 10,
     comparePasswordType = 'callback',
     passwordField = 'password'
@@ -43,7 +43,7 @@ function passwordPlugin (schema, options = {}) {
     bcrypt.genSalt(bcryptRounds, (err, salt) => {
       if (err) return next(err)
 
-      let password = get(this, passwordField)
+      const password = get(this, passwordField)
       bcrypt.hash(password, salt, (err, hash) => {
         if (err) return next(err)
 

@@ -1,57 +1,57 @@
-import passwordPlugin from '../src/'
-import mongoose from 'mongoose'
-import bcrypt from 'bcrypt'
-import { v4 as generateUuid } from 'uuid'
+const passwordPlugin = require('../src/')
+const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
+const generateUuid = require('uuid').v4
 
 describe('passwordPlugin', () => {
   it('adds a password field to model', async () => {
-    let testSchema = new mongoose.Schema({
+    const testSchema = new mongoose.Schema({
       foo: String
     })
     testSchema.plugin(passwordPlugin)
-    let TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
+    const TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
 
-    let testDoc = new TestModel({
+    const testDoc = new TestModel({
       foo: 'bar',
       password: 'asdf'
     })
 
     await testDoc.save()
 
-    expect(testDoc.password).to.exist
+    expect(testDoc.password).to.be.a('string')
   })
 
   it('allows password field to be configurable', async () => {
-    let testSchema = new mongoose.Schema({
+    const testSchema = new mongoose.Schema({
       foo: String
     })
     testSchema.plugin(passwordPlugin, {
       passwordField: 'pwd'
     })
-    let TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
+    const TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
 
-    let testDoc = new TestModel({
+    const testDoc = new TestModel({
       foo: 'bar',
       pwd: 'asdf'
     })
 
     await testDoc.save()
 
-    expect(testDoc.password).to.not.exist
-    expect(testDoc.pwd).to.exist
+    expect(testDoc.password).to.equal(undefined)
+    expect(testDoc.pwd).to.be.a('string')
   })
 
   it('allows password field to be configurable as a nested field', async () => {
-    let testSchema = new mongoose.Schema({
+    const testSchema = new mongoose.Schema({
       foo: String,
       auth: { }
     })
     testSchema.plugin(passwordPlugin, {
       passwordField: 'auth.local.pwd'
     })
-    let TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
+    const TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
 
-    let testDoc = new TestModel({
+    const testDoc = new TestModel({
       foo: 'bar',
       auth: {
         local: {
@@ -62,17 +62,17 @@ describe('passwordPlugin', () => {
 
     await testDoc.save()
 
-    expect(testDoc.auth.local.pwd).to.exist
+    expect(testDoc.auth.local.pwd).to.be.a('string')
   })
 
   it('saves hashed version of password', async () => {
-    let testSchema = new mongoose.Schema({
+    const testSchema = new mongoose.Schema({
       foo: String
     })
     testSchema.plugin(passwordPlugin)
-    let TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
+    const TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
 
-    let testDoc = new TestModel({
+    const testDoc = new TestModel({
       foo: 'bar',
       password: 'asdf'
     })
@@ -83,15 +83,15 @@ describe('passwordPlugin', () => {
   })
 
   it('saves hashed version of configured nested password', async () => {
-    let testSchema = new mongoose.Schema({
+    const testSchema = new mongoose.Schema({
       foo: String
     })
     testSchema.plugin(passwordPlugin, {
       passwordField: 'auth.local.pwd'
     })
-    let TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
+    const TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
 
-    let testDoc = new TestModel({
+    const testDoc = new TestModel({
       foo: 'bar',
       auth: {
         local: {
@@ -106,20 +106,20 @@ describe('passwordPlugin', () => {
   })
 
   it('re-hashes password when password is saved', async () => {
-    let testSchema = new mongoose.Schema({
+    const testSchema = new mongoose.Schema({
       foo: String
     })
     testSchema.plugin(passwordPlugin)
-    let TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
+    const TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
 
-    let testDoc = new TestModel({
+    const testDoc = new TestModel({
       foo: 'bar',
       password: 'asdf'
     })
 
     await testDoc.save()
 
-    let oldHashedPassword = testDoc.password
+    const oldHashedPassword = testDoc.password
 
     testDoc.password = 'foobar'
 
@@ -132,13 +132,13 @@ describe('passwordPlugin', () => {
   it('defaults to setting rounds to 10 for salt generation', async () => {
     sandbox.spy(bcrypt, 'genSalt')
 
-    let testSchema = new mongoose.Schema({
+    const testSchema = new mongoose.Schema({
       foo: String
     })
     testSchema.plugin(passwordPlugin)
-    let TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
+    const TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
 
-    let testDoc = new TestModel({
+    const testDoc = new TestModel({
       foo: 'bar',
       password: 'asdf'
     })
@@ -151,15 +151,15 @@ describe('passwordPlugin', () => {
   it('allows setting number of rounds for salt generation', async () => {
     sandbox.spy(bcrypt, 'genSalt')
 
-    let testSchema = new mongoose.Schema({
+    const testSchema = new mongoose.Schema({
       foo: String
     })
     testSchema.plugin(passwordPlugin, {
       bcryptRounds: 13
     })
-    let TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
+    const TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
 
-    let testDoc = new TestModel({
+    const testDoc = new TestModel({
       foo: 'bar',
       password: 'asdf'
     })
@@ -170,15 +170,15 @@ describe('passwordPlugin', () => {
   })
 
   it('adds a comparePassword method', () => {
-    let testSchema = new mongoose.Schema({
+    const testSchema = new mongoose.Schema({
       foo: String
     })
     testSchema.plugin(passwordPlugin, {
       bcryptRounds: 13
     })
-    let TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
+    const TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
 
-    let testDoc = new TestModel({
+    const testDoc = new TestModel({
       foo: 'bar',
       password: 'asdf'
     })
@@ -187,61 +187,61 @@ describe('passwordPlugin', () => {
   })
 
   it('can configure comparePassword to use callback version', async () => {
-    let testSchema = new mongoose.Schema({
+    const testSchema = new mongoose.Schema({
       foo: String
     })
     testSchema.plugin(passwordPlugin, {
       comparePasswordType: 'callback'
     })
-    let TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
+    const TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
 
-    let testDoc = new TestModel({
+    const testDoc = new TestModel({
       foo: 'bar',
       password: 'asdf'
     })
     await testDoc.save()
 
-    expect(testDoc.comparePassword).to.exist
+    expect(testDoc.comparePassword).to.be.a('function')
   })
 
   it('can configure comparePassword to use sync version', async () => {
-    let testSchema = new mongoose.Schema({
+    const testSchema = new mongoose.Schema({
       foo: String
     })
     testSchema.plugin(passwordPlugin, {
       comparePasswordType: 'sync'
     })
-    let TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
+    const TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
 
-    let testDoc = new TestModel({
+    const testDoc = new TestModel({
       foo: 'bar',
       password: 'asdf'
     })
     await testDoc.save()
 
-    expect(testDoc.comparePassword).to.exist
+    expect(testDoc.comparePassword).to.be.a('function')
   })
 
   it('can configure comparePassword to use promise version', async () => {
-    let testSchema = new mongoose.Schema({
+    const testSchema = new mongoose.Schema({
       foo: String
     })
     testSchema.plugin(passwordPlugin, {
       comparePasswordType: 'promise'
     })
-    let TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
+    const TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
 
-    let testDoc = new TestModel({
+    const testDoc = new TestModel({
       foo: 'bar',
       password: 'asdf'
     })
     await testDoc.save()
 
-    expect(testDoc.comparePassword).to.exist
+    expect(testDoc.comparePassword).to.be.a('function')
   })
 
   it('throws an error if comparePasswordType is set to unsupported type', async () => {
-    let testSchema = new mongoose.Schema({
+    const testSchema = new mongoose.Schema({
       foo: String
     })
     expect(() => {

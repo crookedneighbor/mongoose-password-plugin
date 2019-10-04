@@ -1,12 +1,12 @@
-import {
+const {
   comparePasswordCallback,
   comparePasswordPromise,
   comparePasswordSync
-} from '../src/compare-password'
-import passwordPlugin from '../src/'
-import mongoose from 'mongoose'
-import bcrypt from 'bcrypt'
-import { v4 as generateUuid } from 'uuid'
+} = require('../src/compare-password')
+const passwordPlugin = require('../src/')
+const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
+const generateUuid = require('uuid').v4
 
 describe('Compare Password Methods', () => {
   let password, testDoc
@@ -14,12 +14,12 @@ describe('Compare Password Methods', () => {
   beforeEach(async () => {
     password = 'asdf'
 
-    let testSchema = new mongoose.Schema({
+    const testSchema = new mongoose.Schema({
       foo: String,
       password: String
     })
     testSchema.plugin(passwordPlugin)
-    let TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
+    const TestModel = mongoose.model(`Test-${generateUuid()}`, testSchema)
 
     testDoc = new TestModel({
       foo: 'bar',
@@ -39,7 +39,7 @@ describe('Compare Password Methods', () => {
 
     it('returns match as true if password matches', (done) => {
       comparePassword(password, (err, match) => {
-        expect(err).to.not.exist
+        expect(err).to.equal(null)
         expect(match).to.eql(true)
         done()
       })
@@ -47,7 +47,7 @@ describe('Compare Password Methods', () => {
 
     it('returns match as true if password matches', (done) => {
       comparePassword('some other password', (err, match) => {
-        expect(err).to.not.exist
+        expect(err).to.equal(null)
         expect(match).to.eql(false)
         done()
       })
@@ -73,13 +73,13 @@ describe('Compare Password Methods', () => {
     })
 
     it('returns true if password matches', () => {
-      let match = comparePassword(password)
+      const match = comparePassword(password)
 
       expect(match).to.eql(true)
     })
 
     it('returns false if password does not match', () => {
-      let match = comparePassword('some other password')
+      const match = comparePassword('some other password')
 
       expect(match).to.eql(false)
     })

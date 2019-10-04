@@ -1,11 +1,11 @@
-import bcrypt from 'bcrypt'
-import { get } from 'lodash'
+const bcrypt = require('bcrypt')
+const { get } = require('lodash')
 
-export function comparePasswordCallback (config) {
-  let { passwordField } = config
+function comparePasswordCallback (config) {
+  const { passwordField } = config
 
   return function (passwordToCheck, cb) {
-    let password = get(this, passwordField)
+    const password = get(this, passwordField)
 
     bcrypt.compare(passwordToCheck, password, (err, isMatch) => {
       if (err) return cb(err)
@@ -15,23 +15,23 @@ export function comparePasswordCallback (config) {
   }
 }
 
-export function comparePasswordSync (config) {
-  let { passwordField } = config
+function comparePasswordSync (config) {
+  const { passwordField } = config
 
   return function (passwordToCheck) {
-    let password = get(this, passwordField)
-    let match = bcrypt.compareSync(passwordToCheck, password)
+    const password = get(this, passwordField)
+    const match = bcrypt.compareSync(passwordToCheck, password)
 
     return match
   }
 }
 
-export function comparePasswordPromise (config) {
-  let { passwordField } = config
+function comparePasswordPromise (config) {
+  const { passwordField } = config
 
   return async function (passwordToCheck) {
     return new Promise((resolve, reject) => {
-      let password = get(this, passwordField)
+      const password = get(this, passwordField)
 
       bcrypt.compare(passwordToCheck, password, (err, isMatch) => {
         if (err) return reject(err)
@@ -40,4 +40,10 @@ export function comparePasswordPromise (config) {
       })
     })
   }
+}
+
+module.exports = {
+  comparePasswordCallback,
+  comparePasswordSync,
+  comparePasswordPromise
 }
