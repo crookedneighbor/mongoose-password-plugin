@@ -1,9 +1,11 @@
 {
   "name": "mongoose-password-plugin",
-  "version": "0.1.2",
+  "version": "1.0.0",
   "description": "Mongoose plugin that attaches a salted password to a model.",
   "main": "src/index.js",
-  "files": ["src/index.js"],
+  "files": [
+    "src/index.js"
+  ],
   "scripts": {
     "lint": "standard --verbose | snazzy",
     "test": "npm run lint && mocha"
