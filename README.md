@@ -107,5 +107,11 @@ userSchema.plugin(passwordPlugin, {
 A mongo instance must be running on port 27017 for the tests to run.
 
 ```bash
+mongod --dbpath data/ # this is a gitignored folder
+```
+
+Run the tests:
+
+```bash
 npm t
 ```

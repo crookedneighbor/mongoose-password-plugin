@@ -1,3 +1,7 @@
+# unreleased
+_Breaking Changes_
+* Drop support for Node < v12
+
 # 1.0.0
 
 * Update bcrypt to v3
